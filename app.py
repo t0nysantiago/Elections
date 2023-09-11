@@ -1,5 +1,6 @@
-# pip install SQLAlchemy mysql-connector-python
+# pip install SQLAlchemy mysql-connector-python pandas xlrd
 
+import pandas as pd
 import csv
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker
@@ -30,6 +31,44 @@ class MonthlyElectorate(Base):
     zone = Column(Integer)
     elector_quantity = Column(Integer)
     load_date = Column(String(255))
+
+def load_data_from_excel(filename):
+    Base.metadata.create_all(engine)
+    batch_size = 1000  # Tamanho do lote
+    data_to_insert = []
+
+    try:
+        # Lê o arquivo Excel em um DataFrame
+        df = pd.read_excel(filename)
+
+        for index, row in df.iterrows():
+            elector = MonthlyElectorate(
+                year=int(row['Ano']),
+                marital_status=row['Estado civil'],
+                age_range=row['Faixa etária'],
+                gender=row['Gênero'],
+                education_level=row['Grau de instrução'],
+                month=int(row['Mês']),
+                city=row['Município'],
+                country=row['País'],
+                region=row['Região'],
+                situation=row['Situação do eleitor'],
+                censo_uf=row['UF'],
+                zone=int(row['Zona']),
+                elector_quantity=int(row['Quantidade de eleitor']),
+                load_date=row['Data de carga']
+            )
+            data_to_insert.append(elector)
+
+            if len(data_to_insert) >= batch_size:
+                insert_batch(data_to_insert)
+                data_to_insert = []
+
+        if data_to_insert:
+            insert_batch(data_to_insert)
+
+    except Exception as e:
+        print(f"Erro ao ler arquivo Excel: {e}")
 
 def load_data_from_csv(filename):
 
@@ -79,4 +118,10 @@ def insert_batch(data):
 
 if __name__ == "__main__":
     csv_filename = "eleitorado_mensal.csv"
+    excel_filename = "eleitorado_mensal.xlsx"
+
+    # Carrega dados do arquivo CSV
     load_data_from_csv(csv_filename)
+
+    # Carrega dados do arquivo Excel
+    load_data_from_excel(excel_filename)
