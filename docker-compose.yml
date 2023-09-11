@@ -1,0 +1,42 @@
+version: '3'
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elector_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - elector
+
+  db:
+    image: mysql
+    container_name: elector_db
+    command: ["mysqld", "--wait_timeout=3600", "--interactive_timeout=3600", "--max_allowed_packet=256M"]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: elector
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    networks:
+      - elector
+
+  adminer:
+    image: adminer
+    container_name: elector_adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - elector
+
+networks:
+  elector:
+    driver: bridge
