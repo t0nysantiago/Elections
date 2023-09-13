@@ -1,17 +1,17 @@
 version: '3'
 services:
 
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: elector_api
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    networks:
-      - elector
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: elector_api
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - elector
 
   db:
     image: mysql
@@ -36,6 +36,24 @@ services:
       - 8080:8080
     networks:
       - elector
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server
+    container_name: elector_sql_server
+    environment:
+      SA_PASSWORD: root
+      ACCEPT_EULA: Y
+      MSSQL_PID: Express
+    ports:
+      - "1433:1433"
+    networks:
+      - elector
+
+# DADOS DO SQL SERVER
+# Server: sql-server
+# Port: 1433
+# Usuário: sa
+# Senha: root
 
 networks:
   elector:
