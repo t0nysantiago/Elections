@@ -41,7 +41,7 @@ services:
     image: mcr.microsoft.com/mssql/server
     container_name: elector_sql_server
     environment:
-      SA_PASSWORD: root
+      SA_PASSWORD: MyP@ssw0rd123
       ACCEPT_EULA: Y
       MSSQL_PID: Express
     ports:
@@ -50,10 +50,10 @@ services:
       - elector
 
 # DADOS DO SQL SERVER
-# Server: sql-server
+# Server: localhost
 # Port: 1433
 # Usuário: sa
-# Senha: root
+# Senha: MyP@ssw0rd123
 
 networks:
   elector:
